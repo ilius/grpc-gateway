@@ -1,1 +1,2 @@
 _output/
+third_party/googleapis/google/api/*.pb.go
