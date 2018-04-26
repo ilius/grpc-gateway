@@ -1,2 +1,11 @@
 _output/
+.idea
+
+# Bazel.
+bazel-bin
+bazel-genfiles
+bazel-grpc-gateway
+bazel-out
+bazel-testlogs
+
 third_party/googleapis/google/api/*.pb.go

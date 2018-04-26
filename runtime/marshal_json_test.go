@@ -12,7 +12,7 @@ import (
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/golang/protobuf/ptypes/wrappers"
-	"github.com/ilius/grpc-gateway/examples/examplepb"
+	"github.com/ilius/grpc-gateway/examples/proto/examplepb"
 	"github.com/ilius/grpc-gateway/runtime"
 )
 
