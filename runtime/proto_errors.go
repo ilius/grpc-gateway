@@ -27,7 +27,9 @@ func DefaultHTTPProtoErrorHandler(ctx context.Context, mux *ServeMux, marshaler 
 	const fallback = `{"code": 13, "message": "failed to marshal error message"}`
 
 	w.Header().Del("Trailer")
-	w.Header().Set("Content-Type", marshaler.ContentType())
+	if w.Header().Get("Content-Type") == "" {
+		w.Header().Set("Content-Type", marshaler.ContentType())
+	}
 
 	s, ok := status.FromError(err)
 	if !ok {
