@@ -15,9 +15,12 @@ import (
 )
 
 var (
-	importPrefix    = flag.String("import_prefix", "", "prefix to be added to go package paths for imported proto files")
-	file            = flag.String("file", "-", "where to load data from")
-	allowDeleteBody = flag.Bool("allow_delete_body", false, "unless set, HTTP DELETE methods may not have a body")
+	importPrefix         = flag.String("import_prefix", "", "prefix to be added to go package paths for imported proto files")
+	file                 = flag.String("file", "-", "where to load data from")
+	allowDeleteBody      = flag.Bool("allow_delete_body", false, "unless set, HTTP DELETE methods may not have a body")
+	grpcAPIConfiguration = flag.String("grpc_api_configuration", "", "path to gRPC API Configuration in YAML format")
+	allowMerge           = flag.Bool("allow_merge", false, "if set, generation one swagger file out of multiple protos")
+	mergeFileName        = flag.String("merge_file_name", "apidocs", "target swagger file name prefix after merge")
 )
 
 func main() {
@@ -51,9 +54,19 @@ func main() {
 
 	reg.SetPrefix(*importPrefix)
 	reg.SetAllowDeleteBody(*allowDeleteBody)
+	reg.SetAllowMerge(*allowMerge)
+	reg.SetMergeFileName(*mergeFileName)
 	for k, v := range pkgMap {
 		reg.AddPkgMap(k, v)
 	}
+
+	if *grpcAPIConfiguration != "" {
+		if err := reg.LoadGrpcAPIServiceFromYAML(*grpcAPIConfiguration); err != nil {
+			emitError(err)
+			return
+		}
+	}
+
 	g := genswagger.New(reg)
 
 	if err := reg.Load(req); err != nil {
@@ -108,6 +121,13 @@ func parseReqParam(param string, f *flag.FlagSet, pkgMap map[string]string) erro
 		spec := strings.SplitN(p, "=", 2)
 		if len(spec) == 1 {
 			if spec[0] == "allow_delete_body" {
+				err := f.Set(spec[0], "true")
+				if err != nil {
+					return fmt.Errorf("Cannot set flag %s: %v", p, err)
+				}
+				continue
+			}
+			if spec[0] == "allow_merge" {
 				err := f.Set(spec[0], "true")
 				if err != nil {
 					return fmt.Errorf("Cannot set flag %s: %v", p, err)

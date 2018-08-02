@@ -1,11 +1,10 @@
 package runtime
 
 import (
+	"context"
 	"io"
 	"net/http"
-
 	"context"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/any"
 	"google.golang.org/grpc/codes"
@@ -38,7 +37,7 @@ func HTTPStatusFromCode(code codes.Code) int {
 	case codes.ResourceExhausted:
 		return http.StatusTooManyRequests
 	case codes.FailedPrecondition:
-		return http.StatusBadRequest
+		return http.StatusPreconditionFailed
 	case codes.Aborted:
 		return http.StatusConflict
 	case codes.OutOfRange:
@@ -53,7 +52,7 @@ func HTTPStatusFromCode(code codes.Code) int {
 		return http.StatusInternalServerError
 	}
 
-	grpclog.Printf("Unknown gRPC error code: %v", code)
+	grpclog.Infof("Unknown gRPC error code: %v", code)
 	return http.StatusInternalServerError
 }
 
@@ -96,6 +95,7 @@ func DefaultHTTPError(ctx context.Context, mux *ServeMux, marshaler Marshaler, w
 	}
 
 	body := &errorBody{
+<<<<<<< HEAD
 		Error: s.Message(),
 		Code:  int32(s.Code()),
 	}
@@ -110,20 +110,26 @@ func DefaultHTTPError(ctx context.Context, mux *ServeMux, marshaler Marshaler, w
 	// 		}
 	// 	}
 	// }
+=======
+		Error:   s.Message(),
+		Code:    int32(s.Code()),
+		Details: s.Proto().GetDetails(),
+	}
+>>>>>>> upstream/master
 
 	buf, merr := marshaler.Marshal(body)
 	if merr != nil {
-		grpclog.Printf("Failed to marshal error message %q: %v", body, merr)
+		grpclog.Infof("Failed to marshal error message %q: %v", body, merr)
 		w.WriteHeader(http.StatusInternalServerError)
 		if _, err := io.WriteString(w, fallback); err != nil {
-			grpclog.Printf("Failed to write response: %v", err)
+			grpclog.Infof("Failed to write response: %v", err)
 		}
 		return
 	}
 
 	md, ok := ServerMetadataFromContext(ctx)
 	if !ok {
-		grpclog.Printf("Failed to extract ServerMetadata from context")
+		grpclog.Infof("Failed to extract ServerMetadata from context")
 	}
 
 	handleForwardResponseServerMetadata(w, mux, md)
@@ -131,7 +137,7 @@ func DefaultHTTPError(ctx context.Context, mux *ServeMux, marshaler Marshaler, w
 	st := HTTPStatusFromCode(s.Code())
 	w.WriteHeader(st)
 	if _, err := w.Write(buf); err != nil {
-		grpclog.Printf("Failed to write response: %v", err)
+		grpclog.Infof("Failed to write response: %v", err)
 	}
 
 	handleForwardResponseTrailer(w, md)

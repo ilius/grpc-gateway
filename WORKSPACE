@@ -2,8 +2,8 @@ workspace(name = "grpc_ecosystem_grpc_gateway")
 
 http_archive(
     name = "io_bazel_rules_go",
-    url = "https://github.com/bazelbuild/rules_go/releases/download/0.10.3/rules_go-0.10.3.tar.gz",
-    sha256 = "feba3278c13cde8d67e341a837f69a029f698d7a27ddbb2a202be7a10b22142a",
+    url = "https://github.com/bazelbuild/rules_go/releases/download/0.12.1/rules_go-0.12.1.tar.gz",
+    sha256 = "8b68d0630d63d95dacc0016c3bb4b76154fe34fca93efd65d1c366de3fcb4294",
 )
 
 http_archive(
@@ -34,6 +34,18 @@ go_repository(
     name = "com_github_go_resty_resty",
     commit = "f8815663de1e64d57cdd4ee9e2b2fa96977a030e",
     importpath = "github.com/go-resty/resty",
+)
+
+go_repository(
+	name = "com_github_ghodss_yaml",
+	commit = "0ca9ea5df5451ffdf184b4428c902747c2c11cd7",
+	importpath = "github.com/ghodss/yaml",
+)
+
+go_repository(
+	name = "in_gopkg_yaml_v2",
+	commit = "eb3733d160e74a9c7e442f435eb3bea458e1d19f",
+	importpath = "gopkg.in/yaml.v2",
 )
 
 load("//:repositories.bzl", "repositories")

@@ -9,3 +9,6 @@ bazel-out
 bazel-testlogs
 
 third_party/googleapis/google/api/*.pb.go
+
+# Go vendor directory
+vendor
