@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"context"
+
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/grpclog"
@@ -100,16 +100,16 @@ func DefaultHTTPError(ctx context.Context, mux *ServeMux, marshaler Marshaler, w
 		Code:  int32(s.Code()),
 	}
 
-	for _, detail := range s.Details() {
-		if det, ok := detail.(proto.Message); ok {
-			a, err := ptypes.MarshalAny(det)
-			if err != nil {
-				grpclog.Printf("Failed to marshal any: %v", err)
-			} else {
-				body.Details = append(body.Details, a)
-			}
-		}
-	}
+	// for _, detail := range s.Details() {
+	// 	if det, ok := detail.(proto.Message); ok {
+	// 		a, err := ptypes.MarshalAny(det)
+	// 		if err != nil {
+	// 			grpclog.Printf("Failed to marshal any: %v", err)
+	// 		} else {
+	// 			body.Details = append(body.Details, a)
+	// 		}
+	// 	}
+	// }
 
 	buf, merr := marshaler.Marshal(body)
 	if merr != nil {
